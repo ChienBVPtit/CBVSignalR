@@ -9,6 +9,11 @@ namespace CBVSignalR.Hubs
         public override async Task OnConnectedAsync()
         {
             var userId = Context.UserIdentifier;
+            foreach (var claim in Context.User.Claims)
+            {
+                Console.WriteLine($"{claim.Type} = {claim.Value}");
+            }
+            Console.WriteLine($"UserId: {userId}");
             await base.OnConnectedAsync();
         }
 
