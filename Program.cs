@@ -1,8 +1,12 @@
-﻿using CBVSignalR.Hubs;
+﻿using CBVSignalR.Application.Interfaces;
+using CBVSignalR.Application.Services;
+using CBVSignalR.Context;
+using CBVSignalR.Hubs;
 using CBVSignalR.Providers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -29,6 +33,18 @@ builder.Services.AddCors(options =>
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add send email service
+builder.Services.AddTransient<IGroupSubscriptionService, GroupSubscriptionService>();
+builder.Services.AddTransient<IUserGroupSubscriptionService, UserGroupSubscriptionService>();
+builder.Services.AddTransient<INotificationService, NotificationService>();
+builder.Services.AddTransient<IInboxEventService, InboxEventService>();
+
+builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -81,8 +97,6 @@ builder.Services.AddAuthorization();
 
 // ================= SignalR =================
 builder.Services.AddSignalR();
-
-builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
 
 
 // ================= Redis Backplane =================
