@@ -1,6 +1,10 @@
 ﻿using CBVSignalR.Application.Interfaces;
 using CBVSignalR.Application.Services;
 using CBVSignalR.Context;
+using CBVSignalR.Events.App.Consumers;
+using CBVSignalR.Events.App.Runners;
+using CBVSignalR.Events.Connections;
+using CBVSignalR.Events.Interfaces;
 using CBVSignalR.Hubs;
 using CBVSignalR.Providers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,6 +46,9 @@ builder.Services.AddTransient<IGroupSubscriptionService, GroupSubscriptionServic
 builder.Services.AddTransient<IUserGroupSubscriptionService, UserGroupSubscriptionService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IInboxEventService, InboxEventService>();
+builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
+builder.Services.AddSingleton<JoinUserToGroupConsumer>();
+builder.Services.AddHostedService<JoinUserToGroupConsumerHostedService>();
 
 builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
 

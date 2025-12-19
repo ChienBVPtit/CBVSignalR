@@ -62,5 +62,13 @@ namespace CBVSignalR.Application.Services
             await _db.SaveChangesAsync();
             return existing;
         }
+
+        public async Task<GroupSubscription> GetGroupSubscriptionByName(string name)
+        {
+            name = name.Trim();
+            var existing = await _db.GroupSubscription.FirstOrDefaultAsync(p => p.Name == name);
+            if (existing == null) return null;
+            return existing;
+        }
     }
 }

@@ -55,5 +55,12 @@ namespace CBVSignalR.Application.Services
             await _db.SaveChangesAsync();
             return existing;
         }
+
+        public async Task<bool> IsUserGroupExis(string userId, Guid groupId)
+        {
+            var existing = await _db.UserGroupSubscription.FirstOrDefaultAsync(p => p.UserId == userId && p.GroupId == groupId);
+            if (existing == null) return false;
+            return true;
+        }
     }
 }

@@ -5,5 +5,6 @@ namespace CBVSignalR.Application.Interfaces
 {
     public interface IUserGroupSubscriptionService : IBaseService<UserGroupSubscription, Guid>
     {
+        Task<bool> IsUserGroupExis(string userId, Guid groupId);
     }
 }

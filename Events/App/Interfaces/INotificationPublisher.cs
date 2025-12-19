@@ -1,4 +1,4 @@
-﻿namespace CBVSignalR.Events.Interfaces
+﻿namespace CBVSignalR.Events.App.Interfaces
 {
     public interface INotificationPublisher
     {

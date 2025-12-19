@@ -1,8 +1,8 @@
-﻿using CBVSignalR.Events.Interfaces;
+﻿using CBVSignalR.Events.App.Interfaces;
 using CBVSignalR.Hubs;
 using Microsoft.AspNetCore.SignalR;
 
-namespace CBVSignalR.Events.Publishers
+namespace CBVSignalR.Events.App.Publishers
 {
     public class SignalRNotificationPublisher : INotificationPublisher
     {
