@@ -1,6 +1,7 @@
 ﻿using CBVSignalR.Application.Entities;
 using CBVSignalR.Application.Interfaces;
 using CBVSignalR.Application.Models;
+using CBVSignalR.Application.Models.App;
 using CBVSignalR.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +11,9 @@ namespace CBVSignalR.Controllers
     [ApiController]
     public class NotificationController : ControllerBase
     {
-        private readonly NotificationService _notificationService;
+        private readonly INotificationService _notificationService;
 
-        public NotificationController(NotificationService notificationService)
+        public NotificationController(INotificationService notificationService)
         {
             _notificationService = notificationService;
         }
@@ -65,7 +66,7 @@ namespace CBVSignalR.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] PagingFilterRequest request)
+        public async Task<IActionResult> Get([FromQuery] NotificationFilterRequest request)
         {
             return Ok(await _notificationService.GetAsync(request));
         }

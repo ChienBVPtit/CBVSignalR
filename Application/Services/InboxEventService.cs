@@ -1,12 +1,13 @@
 ﻿using CBVSignalR.Application.Base.Service;
 using CBVSignalR.Application.Entities;
 using CBVSignalR.Application.Interfaces;
+using CBVSignalR.Application.Models.App;
 using CBVSignalR.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace CBVSignalR.Application.Services
 {
-    public class InboxEventService : BaseService<InboxEvent, Guid>, IInboxEventService
+    public class InboxEventService : BaseService<InboxEvent, Guid, InboxEventFilterRequest>, IInboxEventService
     {
         protected ApplicationDbContext _db
         => (ApplicationDbContext)_context;
@@ -77,6 +78,28 @@ namespace CBVSignalR.Application.Services
         //            x.Name.Contains(keyword));
 
         //    return query;
+        //}
+
+        //protected override IQueryable<GroupSubscription> ApplySort(
+        //    IQueryable<GroupSubscription> query,
+        //    PagingFilterRequest request)
+        //{
+        //    if (string.IsNullOrWhiteSpace(request.SortBy))
+        //        return query.OrderByDescending(x => x.CreatedAt); // default
+
+        //    return (request.SortBy.ToLower(), request.SortDir?.ToLower()) switch
+        //    {
+        //        ("name", "asc") => query.OrderBy(x => x.Name),
+        //        ("name", "desc") => query.OrderByDescending(x => x.Name),
+
+        //        ("code", "asc") => query.OrderBy(x => x.Code),
+        //        ("code", "desc") => query.OrderByDescending(x => x.Code),
+
+        //        ("createdat", "asc") => query.OrderBy(x => x.CreatedAt),
+        //        ("createdat", "desc") => query.OrderByDescending(x => x.CreatedAt),
+
+        //        _ => query.OrderByDescending(x => x.CreatedAt)
+        //    };
         //}
     }
 }

@@ -2,6 +2,7 @@
 using CBVSignalR.Application.Entities;
 using CBVSignalR.Application.Interfaces;
 using CBVSignalR.Application.Models;
+using CBVSignalR.Application.Models.App;
 using CBVSignalR.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,7 +10,7 @@ using System.Text.RegularExpressions;
 
 namespace CBVSignalR.Application.Services
 {
-    public class GroupSubscriptionService : BaseService<GroupSubscription, Guid>, IGroupSubscriptionService
+    public class GroupSubscriptionService : BaseService<GroupSubscription, Guid, GroupSubscriptionFilterRequest>, IGroupSubscriptionService
     {
         protected ApplicationDbContext _db
         => (ApplicationDbContext)_context;
@@ -76,26 +77,48 @@ namespace CBVSignalR.Application.Services
             return existing;
         }
 
-        //protected override IQueryable<GroupSubscription> ApplyFilter(
-        //IQueryable<GroupSubscription> query,
-        //PagingFilterRequest request)
-        //{
-        //    //if (request.Type.HasValue)
-        //    //    query = query.Where(x => x.Type == request.Type);
+        protected override IQueryable<GroupSubscription> ApplyFilter(
+        IQueryable<GroupSubscription> query,
+        GroupSubscriptionFilterRequest request)
+        {
+            //if (request.Keyword)
+            //    query = query.Where(x => x.Type == request.Type);
 
-        //    return query;
-        //}
+            return query;
+        }
 
-        //protected override IQueryable<GroupSubscription> ApplySearch(
-        //    IQueryable<GroupSubscription> query,
-        //    string? keyword)
-        //{
-        //    if (!string.IsNullOrWhiteSpace(keyword))
-        //        query = query.Where(x =>
-        //            x.Code.Contains(keyword) ||
-        //            x.Name.Contains(keyword));
+        protected override IQueryable<GroupSubscription> ApplySearch(
+            IQueryable<GroupSubscription> query,
+            string? keyword)
+        {
+            if (!string.IsNullOrWhiteSpace(keyword))
+                query = query.Where(x =>
+                    x.Code.Contains(keyword) ||
+                    x.Name.Contains(keyword));
 
-        //    return query;
-        //}
+            return query;
+        }
+
+        protected override IQueryable<GroupSubscription> ApplySort(
+            IQueryable<GroupSubscription> query,
+            PagingFilterRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.SortBy))
+                return query.OrderByDescending(x => x.CreatedAt); // default
+
+            return (request.SortBy.ToLower(), request.SortDir?.ToLower()) switch
+            {
+                ("name", "asc") => query.OrderBy(x => x.Name),
+                ("name", "desc") => query.OrderByDescending(x => x.Name),
+
+                ("code", "asc") => query.OrderBy(x => x.Code),
+                ("code", "desc") => query.OrderByDescending(x => x.Code),
+
+                ("createdat", "asc") => query.OrderBy(x => x.CreatedAt),
+                ("createdat", "desc") => query.OrderByDescending(x => x.CreatedAt),
+
+                _ => query.OrderByDescending(x => x.CreatedAt)
+            };
+        }
     }
 }

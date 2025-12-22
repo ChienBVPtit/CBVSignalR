@@ -1,9 +1,10 @@
-﻿using CBVSignalR.Application.Models;
+﻿using Azure.Core;
+using CBVSignalR.Application.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CBVSignalR.Application.Base.Service
 {
-    public abstract class BaseService<TEntity, TKey> : IBaseService<TEntity, TKey> where TEntity : class
+    public abstract class BaseService<TEntity, TKey, TRequest> : IBaseService<TEntity, TKey, TRequest> where TEntity : class where TRequest : PagingFilterRequest
     {
         protected readonly DbContext _context;
         protected readonly DbSet<TEntity> _dbSet;
@@ -64,12 +65,13 @@ namespace CBVSignalR.Application.Base.Service
 
         #region PAGING + FILTER
         public virtual async Task<PagedResult<TEntity>> GetAsync(
-            PagingFilterRequest request)
+            TRequest request)
         {
             var query = _dbSet.AsNoTracking().AsQueryable();
 
             query = ApplyFilter(query, request);
             query = ApplySearch(query, request.Keyword);
+            query = ApplySort(query, request);
 
             var totalCount = await query.CountAsync();
 
@@ -90,14 +92,17 @@ namespace CBVSignalR.Application.Base.Service
 
         #region HOOK METHODS
         protected virtual IQueryable<TEntity> ApplyFilter(
-            IQueryable<TEntity> query,
-            PagingFilterRequest request)
-            => query;
+        IQueryable<TEntity> query,
+        TRequest request) => query;
 
         protected virtual IQueryable<TEntity> ApplySearch(
             IQueryable<TEntity> query,
             string? keyword)
             => query;
+        protected virtual IQueryable<TEntity> ApplySort(
+        IQueryable<TEntity> query,
+        PagingFilterRequest request)
+        => query;
         #endregion
     }
 }

@@ -1,5 +1,7 @@
 ﻿using CBVSignalR.Application.Entities;
+using CBVSignalR.Application.Interfaces;
 using CBVSignalR.Application.Models;
+using CBVSignalR.Application.Models.App;
 using CBVSignalR.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security;
@@ -10,9 +12,9 @@ namespace CBVSignalR.Controllers
     [ApiController]
     public class GroupSubscriptionController : ControllerBase
     {
-        private readonly GroupSubscriptionService _groupSubscriptionService;
+        private readonly IGroupSubscriptionService _groupSubscriptionService;
 
-        public GroupSubscriptionController(GroupSubscriptionService groupSubscriptionService)
+        public GroupSubscriptionController(IGroupSubscriptionService groupSubscriptionService)
         {
             _groupSubscriptionService = groupSubscriptionService;
         }
@@ -69,7 +71,7 @@ namespace CBVSignalR.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] PagingFilterRequest request)
+        public async Task<IActionResult> Get([FromQuery] GroupSubscriptionFilterRequest request)
         {
             return Ok(await _groupSubscriptionService.GetAsync(request));
         }

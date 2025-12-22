@@ -2,7 +2,7 @@
 
 namespace CBVSignalR.Application.Base.Service
 {
-    public interface IBaseService<TEntity, TKey> where TEntity : class
+    public interface IBaseService<TEntity, TKey, TRequest> where TEntity : class where TRequest : PagingFilterRequest
     {
         /// <summary> Tạo mới entity </summary>
         Task<TEntity> CreateAsync(TEntity entity);
@@ -21,6 +21,6 @@ namespace CBVSignalR.Application.Base.Service
         /// <summary>
         /// Lấy danh sách có phân trang + filter nếu có
         /// </summary>
-        Task<PagedResult<TEntity>> GetAsync(PagingFilterRequest request);
+        Task<PagedResult<TEntity>> GetAsync(TRequest request);
     }
 }

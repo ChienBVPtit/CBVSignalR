@@ -1,6 +1,7 @@
 ﻿using CBVSignalR.Application.Entities;
 using CBVSignalR.Application.Interfaces;
 using CBVSignalR.Application.Models;
+using CBVSignalR.Application.Models.App;
 using CBVSignalR.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +11,9 @@ namespace CBVSignalR.Controllers
     [ApiController]
     public class InboxEventController : ControllerBase
     {
-        private readonly InboxEventService _inboxEventService;
+        private readonly IInboxEventService _inboxEventService;
 
-        public InboxEventController(InboxEventService inboxEventService)
+        public InboxEventController(IInboxEventService inboxEventService)
         {
             _inboxEventService = inboxEventService;
         }
@@ -65,7 +66,7 @@ namespace CBVSignalR.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] PagingFilterRequest request)
+        public async Task<IActionResult> Get([FromQuery] InboxEventFilterRequest request)
         {
             return Ok(await _inboxEventService.GetAsync(request));
         }
