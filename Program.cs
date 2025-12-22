@@ -47,8 +47,10 @@ builder.Services.AddTransient<IUserGroupSubscriptionService, UserGroupSubscripti
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IInboxEventService, InboxEventService>();
 builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
+
+// ================= Consumer - HostedService =================
 builder.Services.AddSingleton<JoinUserToGroupConsumer>();
-builder.Services.AddHostedService<JoinUserToGroupConsumerHostedService>();
+//builder.Services.AddHostedService<JoinUserToGroupConsumerHostedService>();
 
 builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
 
