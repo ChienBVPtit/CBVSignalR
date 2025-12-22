@@ -1,18 +1,23 @@
-﻿using CBVSignalR.Application.Entities;
+﻿using CBVSignalR.Application.Base.Service;
+using CBVSignalR.Application.Entities;
 using CBVSignalR.Application.Interfaces;
+using CBVSignalR.Application.Models;
 using CBVSignalR.Context;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Text.RegularExpressions;
 
 namespace CBVSignalR.Application.Services
 {
-    public class GroupSubscriptionService : IGroupSubscriptionService
+    public class GroupSubscriptionService : BaseService<GroupSubscription, Guid>, IGroupSubscriptionService
     {
-        private readonly ApplicationDbContext _db;
-        public GroupSubscriptionService(ApplicationDbContext db)
+        protected ApplicationDbContext _db
+        => (ApplicationDbContext)_context;
+        public GroupSubscriptionService(ApplicationDbContext context)
+        : base(context)
         {
-            _db = db;
         }
-        public async Task<GroupSubscription> CreateAsync(GroupSubscription entity)
+        public override async Task<GroupSubscription> CreateAsync(GroupSubscription entity)
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
 
@@ -26,7 +31,7 @@ namespace CBVSignalR.Application.Services
             return entity;
         }
 
-        public async Task<bool> DeleteAsync(Guid id)
+        public override async Task<bool> DeleteAsync(Guid id)
         {
             var existing = await _db.GroupSubscription.FindAsync(id);
             if (existing == null) return false;
@@ -36,21 +41,21 @@ namespace CBVSignalR.Application.Services
             return true;
         }
 
-        public async Task<IEnumerable<GroupSubscription>> GetAllAsync()
+        public override async Task<IEnumerable<GroupSubscription>> GetAllAsync()
         {
             return await _db.GroupSubscription
                .AsNoTracking()
                .ToListAsync();
         }
 
-        public async Task<GroupSubscription?> GetByIdAsync(Guid id)
+        public override async Task<GroupSubscription?> GetByIdAsync(Guid id)
         {
             return await _db.GroupSubscription
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<GroupSubscription?> UpdateAsync(Guid id, GroupSubscription entity)
+        public override async Task<GroupSubscription?> UpdateAsync(Guid id, GroupSubscription entity)
         {
             var existing = await _db.GroupSubscription.FindAsync(id);
             if (existing == null) return null;
@@ -70,5 +75,27 @@ namespace CBVSignalR.Application.Services
             if (existing == null) return null;
             return existing;
         }
+
+        //protected override IQueryable<GroupSubscription> ApplyFilter(
+        //IQueryable<GroupSubscription> query,
+        //PagingFilterRequest request)
+        //{
+        //    //if (request.Type.HasValue)
+        //    //    query = query.Where(x => x.Type == request.Type);
+
+        //    return query;
+        //}
+
+        //protected override IQueryable<GroupSubscription> ApplySearch(
+        //    IQueryable<GroupSubscription> query,
+        //    string? keyword)
+        //{
+        //    if (!string.IsNullOrWhiteSpace(keyword))
+        //        query = query.Where(x =>
+        //            x.Code.Contains(keyword) ||
+        //            x.Name.Contains(keyword));
+
+        //    return query;
+        //}
     }
 }

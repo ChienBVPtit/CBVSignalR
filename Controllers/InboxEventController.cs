@@ -1,4 +1,6 @@
 ﻿using CBVSignalR.Application.Entities;
+using CBVSignalR.Application.Interfaces;
+using CBVSignalR.Application.Models;
 using CBVSignalR.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,7 +35,7 @@ namespace CBVSignalR.Controllers
         }
 
         // GET: api/inboxEvent/
-        [HttpGet]
+        [HttpGet("all")]
         //[AuthorizePermission("GET-ALL-PERMISSION")]
         public async Task<IActionResult> GetAllInboxEvent()
         {
@@ -60,6 +62,12 @@ namespace CBVSignalR.Controllers
             var deleted = await _inboxEventService.DeleteAsync(id);
             if (!deleted) return NotFound();
             return NoContent();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] PagingFilterRequest request)
+        {
+            return Ok(await _inboxEventService.GetAsync(request));
         }
     }
 }

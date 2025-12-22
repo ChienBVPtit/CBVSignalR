@@ -1,4 +1,5 @@
 ﻿using CBVSignalR.Application.Entities;
+using CBVSignalR.Application.Models;
 using CBVSignalR.Application.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Security;
@@ -38,7 +39,7 @@ namespace CBVSignalR.Controllers
         }
 
         // GET: api/groupSubscription/
-        [HttpGet]
+        [HttpGet("all")]
         //[AuthorizePermission("GET-ALL-PERMISSION")]
         public async Task<IActionResult> GetAllGroupSubscription()
         {
@@ -65,6 +66,12 @@ namespace CBVSignalR.Controllers
             var deleted = await _groupSubscriptionService.DeleteAsync(id);
             if (!deleted) return NotFound();
             return NoContent();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery] PagingFilterRequest request)
+        {
+            return Ok(await _groupSubscriptionService.GetAsync(request));
         }
 
     }

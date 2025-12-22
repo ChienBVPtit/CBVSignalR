@@ -1,4 +1,6 @@
-﻿namespace CBVSignalR.Application.Base.Service
+﻿using CBVSignalR.Application.Models;
+
+namespace CBVSignalR.Application.Base.Service
 {
     public interface IBaseService<TEntity, TKey> where TEntity : class
     {
@@ -16,5 +18,9 @@
 
         /// <summary> Lấy tất cả entity </summary>
         Task<IEnumerable<TEntity>> GetAllAsync();
+        /// <summary>
+        /// Lấy danh sách có phân trang + filter nếu có
+        /// </summary>
+        Task<PagedResult<TEntity>> GetAsync(PagingFilterRequest request);
     }
 }
