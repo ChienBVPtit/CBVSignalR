@@ -1,8 +1,13 @@
 ﻿using CBVSignalR.Application.Base.Event;
 using CBVSignalR.Application.Entities;
 using CBVSignalR.Application.Interfaces;
+using CBVSignalR.Context;
+using CBVSignalR.Events.App.Interfaces;
 using CBVSignalR.Events.App.Models;
 using CBVSignalR.Events.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace CBVSignalR.Events.App.Consumers
 {
@@ -11,35 +16,29 @@ namespace CBVSignalR.Events.App.Consumers
         protected override string QueueName => "join-user-to-groupsubscription-queue";
         protected override string RoutingKey => "joinusertogroup";
 
+        private readonly ILogger<JoinUserToGroupConsumer> _logger;
+
         public JoinUserToGroupConsumer(
+        ILogger<JoinUserToGroupConsumer> logger,
         IRabbitMqConnection connection,
         IServiceScopeFactory scopeFactory)
         : base(connection, scopeFactory)
         {
+            _logger = logger;
         }
 
         protected override async Task HandleAsync(
         JoinUserToGroupEvent @event,
         IServiceProvider serviceProvider)
         {
-            var userGroupSubscriptionService =
-                serviceProvider.GetRequiredService<IUserGroupSubscriptionService>();
-            var groupSubscriptionService =
-                serviceProvider.GetRequiredService<IGroupSubscriptionService>();
-            //Kiểm tra có tồn tại group với groupName không
-            var isGroupExis = await groupSubscriptionService.GetGroupSubscriptionByName(@event.GroupName);
-            if (isGroupExis == null) return;
-            //Kiểm tra đã tồn tại liên kết user với group đó chưa trước khi thêm mới
-            bool isUserGroupExis = await userGroupSubscriptionService.IsUserGroupExis(@event.UserId, isGroupExis.Id);
-            if (isUserGroupExis == true) return;
-            //Thực hiện thêm mới User group
-            var userGroupSubscription = new UserGroupSubscription
-            {
-                GroupId = isGroupExis.Id,
-                UserId = @event.UserId,
-                IsActive = true
-            };
-            await userGroupSubscriptionService.CreateAsync(userGroupSubscription);
+            _logger.LogInformation(
+            $"📥 Received JoinUserToGroupEvent | EventId={@event.EventId}",
+            @event.EventId);
+
+            var handler =
+                serviceProvider.GetRequiredService<IJoinUserToGroupHandler>();
+
+            await handler.HandleAsync(@event);
         }
     }
 }
