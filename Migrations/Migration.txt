@@ -1,4 +1,8 @@
-
+﻿
 dotnet ef migrations add InitDatabase --context ApplicationDbContext
 
 dotnet ef database update InitDatabase --context ApplicationDbContext
+
+
+
+Khi muốn update database: dotnet ef database update

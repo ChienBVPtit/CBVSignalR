@@ -8,8 +8,12 @@ namespace CBVSignalR.Application.Base.Event
 {
     public abstract class BaseConsumer<TEvent>
     {
+        protected abstract string ExchangeName { get; }
+        protected abstract string ExchangeTypeName { get; }
         protected abstract string QueueName { get; }
         protected abstract string RoutingKey { get; }
+        protected virtual bool Durable => true;
+        protected virtual ushort PrefetchCount => 10;
 
         private readonly IRabbitMqConnection _connection;
         private readonly IServiceScopeFactory _scopeFactory;
@@ -26,22 +30,7 @@ namespace CBVSignalR.Application.Base.Event
         {
             var connection = _connection.GetConnection();
             var channel = connection.CreateModel();
-
-            channel.ExchangeDeclare(
-                exchange: "user-groupsubscription-exchange",
-                type: ExchangeType.Topic,
-                durable: true);
-
-            channel.QueueDeclare(
-                queue: QueueName,
-                durable: true,
-                exclusive: false,
-                autoDelete: false);
-
-            channel.QueueBind(
-                queue: QueueName,
-                exchange: "user-groupsubscription-exchange",
-                routingKey: RoutingKey);
+            DeclareTopology(channel);
 
             // PREFETCH (quan trọng cho scale)
             channel.BasicQos(0, 10, false);
@@ -71,6 +60,25 @@ namespace CBVSignalR.Application.Base.Event
                 queue: QueueName,
                 autoAck: false,
                 consumer: consumer);
+        }
+
+        protected virtual void DeclareTopology(IModel channel)
+        {
+            channel.ExchangeDeclare(
+                exchange: ExchangeName,
+                type: ExchangeTypeName,
+                durable: Durable);
+
+            channel.QueueDeclare(
+                queue: QueueName,
+                durable: Durable,
+                exclusive: false,
+                autoDelete: false);
+
+            channel.QueueBind(
+                queue: QueueName,
+                exchange: ExchangeName,
+                routingKey: RoutingKey);
         }
 
         protected abstract Task HandleAsync(

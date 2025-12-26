@@ -8,13 +8,16 @@ using CBVSignalR.Events.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using RabbitMQ.Client;
 
 namespace CBVSignalR.Events.App.Consumers
 {
     public class JoinUserToGroupConsumer : BaseConsumer<JoinUserToGroupEvent>
     {
-        protected override string QueueName => "join-user-to-groupsubscription-queue";
-        protected override string RoutingKey => "joinusertogroup";
+        protected override string ExchangeName => "user.events";
+        protected override string ExchangeTypeName => ExchangeType.Topic;
+        protected override string QueueName => "signalr.join-user-to-group";
+        protected override string RoutingKey => "user.joined-group";
 
         private readonly ILogger<JoinUserToGroupConsumer> _logger;
 
