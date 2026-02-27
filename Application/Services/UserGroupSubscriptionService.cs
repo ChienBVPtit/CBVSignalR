@@ -65,6 +65,13 @@ namespace CBVSignalR.Application.Services
             return true;
         }
 
+        public async Task<IEnumerable<UserGroupSubscription>> GetUserGroupSubscriptionByUserIdAsync(string userId)
+        {
+            if (userId == null || userId.Trim() == "") return [];
+            var lstUserGroupSubscription = await _db.UserGroupSubscription.Where(x => x.UserId == userId).ToListAsync();
+            return lstUserGroupSubscription;
+        }
+
         //protected override IQueryable<GroupSubscription> ApplyFilter(
         //IQueryable<GroupSubscription> query,
         //PagingFilterRequest request)

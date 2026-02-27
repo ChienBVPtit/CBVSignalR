@@ -1,5 +1,6 @@
 ﻿using CBVSignalR.Application.Const;
 using CBVSignalR.Application.Entities;
+using CBVSignalR.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -8,14 +9,22 @@ namespace CBVSignalR.Hubs
     [Authorize]
     public class NotificationHub : Hub
     {
+        private readonly IUserGroupSubscriptionService _userGroupSubscriptionService;
+
+        public NotificationHub(IUserGroupSubscriptionService userGroupSubscriptionService)
+        {
+            _userGroupSubscriptionService = userGroupSubscriptionService;
+        }
         public override async Task OnConnectedAsync()
         {
             var userId = Context.UserIdentifier;
-            foreach (var claim in Context.User.Claims)
+            #region truy vấn db lấy tất cả các group của user để gán lại
+            var lstUserGroup = _userGroupSubscriptionService.GetUserGroupSubscriptionByUserIdAsync(userId ?? "").Result;
+            foreach (var item in lstUserGroup)
             {
-                Console.WriteLine($"{claim.Type} = {claim.Value}");
+                await Groups.AddToGroupAsync(Context.ConnectionId, item.GroupSubscription.Name);
             }
-            Console.WriteLine($"UserId: {userId}");
+            #endregion
             await base.OnConnectedAsync();
         }
 
