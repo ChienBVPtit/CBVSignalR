@@ -9,7 +9,7 @@ namespace CBVSignalR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserGroupSubscriptionController : Controller
+    public class UserGroupSubscriptionController : ControllerBase
     {
         private readonly IUserGroupSubscriptionService _userGroupSubscriptionService;
 

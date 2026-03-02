@@ -1,8 +1,13 @@
 ﻿
 dotnet ef migrations add InitDatabase --context ApplicationDbContext
+dotnet ef migrations add UpdateDatabase_v1 --context ApplicationDbContext
 
 dotnet ef database update InitDatabase --context ApplicationDbContext
+dotnet ef database update UpdateDatabase_v1 --context ApplicationDbContext
 
-
+Khi muốn xóa migrations mới nhất - trường hợp chưa update vào database: dotnet ef migrations remove
+Khi muốn xóa migrations mới nhất -  trường hợp đã update vào databse:
+	- Đưa db về trạng thái cũ: dotnet ef database update Ten_ban_migration_dung_truoc_ban_xoa
+	- Xóa migration: dotnet ef migrations remove
 
 Khi muốn update database: dotnet ef database update

@@ -11,9 +11,11 @@ namespace CBVSignalR.Context
         : base(options)
         {
         }
+        public DbSet<User> User { get; set; }
         public DbSet<GroupSubscription> GroupSubscription { get; set; }
         public DbSet<UserGroupSubscription> UserGroupSubscription { get; set; }
         public DbSet<Notification> Notification { get; set; }
+        public DbSet<UserNotification> UserNotification { get; set; }
         public DbSet<InboxEvent> InboxEvent { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -42,6 +44,21 @@ namespace CBVSignalR.Context
                     }
                 }
             }
+
+            builder.Entity<User>(entity =>
+            {
+                entity.Property(p => p.Id)
+                      .IsRequired();
+
+                entity.HasIndex(p => p.Id)
+                      .IsUnique();
+
+                entity.Property(p => p.UserId)
+                      .IsRequired();
+
+                entity.HasIndex(p => p.UserId)
+                      .IsUnique();
+            });
 
             builder.Entity<GroupSubscription>(entity =>
             {
@@ -77,6 +94,25 @@ namespace CBVSignalR.Context
 
                 entity.Property(p => p.Content)
                       .HasMaxLength(4000);
+            });
+
+            builder.Entity<UserNotification>(entity =>
+            {
+                entity.Property(p => p.Id)
+                      .IsRequired();
+
+                entity.HasIndex(p => p.Id)
+                      .IsUnique();
+
+                entity.HasOne(rp => rp.User)
+                      .WithMany()
+                      .HasForeignKey(rp => rp.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(rp => rp.Notification)
+                      .WithMany()
+                      .HasForeignKey(rp => rp.NotificationId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<InboxEvent>(entity =>
