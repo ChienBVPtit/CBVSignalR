@@ -1,6 +1,6 @@
-﻿using CBVSignalR.Application.Entities;
+﻿using CBV.Shared.Events;
+using CBVSignalR.Application.Entities;
 using CBVSignalR.Context;
-using CBVSignalR.Events.ModelEvent;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 

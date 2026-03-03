@@ -1,4 +1,4 @@
-﻿using CBVSignalR.Events.ModelEvent;
+﻿using CBV.Shared.Events;
 using MassTransit;
 
 namespace CBVSignalR.Events.Consumers
