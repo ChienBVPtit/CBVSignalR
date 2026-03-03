@@ -1,17 +1,15 @@
 ﻿using CBVSignalR.Application.Interfaces;
 using CBVSignalR.Application.Services;
 using CBVSignalR.Context;
-using CBVSignalR.Events.App.Consumers;
-using CBVSignalR.Events.App.Runners;
-using CBVSignalR.Events.Connections;
-using CBVSignalR.Events.Interfaces;
 using CBVSignalR.Hubs;
 using CBVSignalR.Providers;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,11 +44,6 @@ builder.Services.AddTransient<IGroupSubscriptionService, GroupSubscriptionServic
 builder.Services.AddTransient<IUserGroupSubscriptionService, UserGroupSubscriptionService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IInboxEventService, InboxEventService>();
-builder.Services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
-
-// ================= Consumer - HostedService =================
-builder.Services.AddSingleton<JoinUserToGroupConsumer>();
-//builder.Services.AddHostedService<JoinUserToGroupConsumerHostedService>();
 
 builder.Services.AddSingleton<IUserIdProvider, UserIdProvider>();
 
@@ -106,6 +99,25 @@ builder.Services.AddAuthorization();
 
 // ================= SignalR =================
 builder.Services.AddSignalR();
+
+// ================= RabbitMQ =================
+builder.Services.AddMassTransit(x =>
+{
+    // Tự động tìm tất cả các Consumer trong Assembly này
+    x.AddConsumers(Assembly.GetExecutingAssembly());
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var rabbitConfig = builder.Configuration.GetSection("RabbitMQ");
+        cfg.Host(rabbitConfig["Host"], rabbitConfig["VirtualHost"], h => {
+            h.Username(rabbitConfig["Username"]);
+            h.Password(rabbitConfig["Password"]);
+        });
+
+        // Tự động cấu hình các Endpoint dựa trên tên Consumer
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 
 // ================= Redis Backplane =================
